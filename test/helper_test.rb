@@ -146,6 +146,19 @@ HTML
 HAML
   end
 
+  def test_form_for
+    def @base.protect_against_forgery?; false; end
+    assert_equal(<<HTML, render(<<HAML, :action_view))
+<form accept-charset="UTF-8" action="foo" method="post">#{rails_form_opener}
+  <input id="post_name" name="post[name]" type="text" />
+</form>
+HTML
+
+= form_for OpenStruct.new, :as => :post, :url => 'foo' do |f|
+  = f.text_field :name
+HAML
+  end
+
   def test_pre
     assert_equal(%(<pre>Foo bar&#x000A;   baz</pre>\n),
                  render('= content_tag "pre", "Foo bar\n   baz"', :action_view))
